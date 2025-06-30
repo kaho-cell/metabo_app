@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import xgboost as xgb # XGBoost をインポート
+import matplotlib.pyplot as plt
+import seaborn as sns # 特徴量重要度を可視化するために追加
 
 # データの読み込み
 df = pd.read_csv("metabo_app/health_check_simulated.csv")
@@ -57,6 +59,31 @@ print(confusion_matrix(y_test, y_pred_xgb))
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred_xgb))
 print("\nAccuracy Score:", accuracy_score(y_test, y_pred_xgb))
+
+#特徴量重要度の表示
+# 特徴量重要度を取得
+feature_importances = best_xgb_model.feature_importances_
+
+# 特徴量の名前と重要度をDataFrameに結合
+importance_df = pd.DataFrame({
+    'Feature': X.columns,
+    'Importance': feature_importances
+})
+
+# 重要度でソート
+importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+print("\n--- 特徴量重要度 ---")
+print(importance_df)
+
+# 特徴量重要度を可視化
+plt.figure(figsize=(12, 8))
+sns.barplot(x='Importance', y='Feature', data=importance_df)
+plt.title('XGBoost Feature Importance')
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.tight_layout()
+plt.show()
 
 ###################################################################################
 #結果
