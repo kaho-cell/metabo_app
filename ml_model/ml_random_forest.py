@@ -29,9 +29,9 @@ param_grid = {
 
 # モデル構築
 model = RandomForestClassifier(random_state=42)
-random_search = RandomizedSearchCV(estimator=model, param_distributions=param_grid, 
-                                   n_iter=100, cv=5, scoring='accuracy', 
-                                   random_state=42, n_jobs=-1, verbose=2)
+random_search = GridSearchCV(estimator=model, param_grid=param_grid, 
+                                   cv=5, scoring='accuracy', 
+                                   n_jobs=-1, verbose=2)
 
 random_search.fit(X_train, y_train)
 
@@ -52,3 +52,23 @@ print(confusion_matrix(y_test, y_pred_random))
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred_random))
 print("\nAccuracy Score:", accuracy_score(y_test, y_pred_random))
+
+###########################################################
+#結果
+#ベストスコア (accuracy): 0.8900
+#最適なハイパーパラメータ: {'max_depth': 10, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 2, 'n_estimators': 300}
+#Confusion Matrix:
+#[[212  10]
+# [ 29  49]]
+#
+#Classification Report:
+#              precision    recall  f1-score   support
+#
+#          0       0.88      0.95      0.92       222 
+#           1       0.83      0.63      0.72        78 
+#    accuracy                           0.87       300
+#   macro avg       0.86      0.79      0.82       300
+#weighted avg       0.87      0.87      0.86       300
+#
+#
+#Accuracy Score: 0.87
