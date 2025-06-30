@@ -4,6 +4,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 import xgboost as xgb # XGBoost をインポート
 import matplotlib.pyplot as plt
 import seaborn as sns # 特徴量重要度を可視化するために追加
+from sklearn.preprocessing import StandardScaler
 
 # データの読み込み
 df = pd.read_csv("metabo_app/health_check_simulated.csv")
@@ -16,6 +17,16 @@ y = df["metabo"]
 
 # データ分割（学習70%、テスト30%）
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# --- 説明変数の標準化 ---
+scaler = StandardScaler()
+X_train_scaled  = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+#データフレームに適用
+X_train = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+X_test = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+
 
 # GridSearchCV を使ったハイパーパラメータチューニング
 # XGBoost のパラメータ調整
@@ -86,10 +97,13 @@ plt.tight_layout()
 plt.show()
 
 ###################################################################################
-#結果
+#ベストスコア (accuracy): 0.8857
+#最適なハイパーパラメータ: {'colsample_bytree': 0.8, 'gamma': 0, 'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 300, 'reg_alpha': 0, 'subsample': 0.7}
+#
+#--- モデル評価 ---
 #Confusion Matrix:
 #[[211  11]
-# [ 29  49]]
+# [ 29  49]]#
 #
 #Classification Report:
 #              precision    recall  f1-score   support
@@ -100,6 +114,26 @@ plt.show()
 #    accuracy                           0.87       300
 #   macro avg       0.85      0.79      0.81       300
 #weighted avg       0.86      0.87      0.86       300
-#
+##
 #
 #Accuracy Score: 0.8666666666666667
+#
+#--- 特徴量重要度 ---
+#      Feature  Importance
+#1     waist_1    0.341200
+#5       ldl_1    0.062752
+#8        q1_1    0.055396
+#7        tg_1    0.046625
+#2     sysbp_1    0.046506
+#14       q7_1    0.045890
+#4   glucose_1    0.045476
+#10       q3_1    0.044057
+#13       q6_1    0.040890
+#0       bmi_1    0.040348
+#3     diabp_1    0.039003
+#15       q8_1    0.038494
+#11       q4_1    0.036322
+#6       hdl_1    0.034369
+#9        q2_1    0.028616
+#12       q5_1    0.028401
+#16       q9_1    0.025657
