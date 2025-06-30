@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSe
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import numpy as np # RandomizedSearchCVで均等な分布を作成するために使用
+from sklearn.preprocessing import StandardScaler # 標準化のために追加
+
 
 # データの読み込み
 df = pd.read_csv("metabo_app/health_check_simulated.csv")
@@ -15,6 +17,15 @@ y = df["metabo"]
 
 # データ分割（学習70%、テスト30%）
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# --- 説明変数の標準化 ---
+scaler = StandardScaler()
+X_train_scaled  = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+#データフレームに適用
+X_train = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+X_test = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 
 #GridSearchCV を使ったハイパーパラメータチューニング
 
